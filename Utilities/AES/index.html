@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>AES Encryption / Decryption Tool</title>
+
+		<!-- Jquery-->
+        <script src="crypto.js"></script>
+        
+        <!-- Bootstrap-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+		<!-- Encrypt / Decrypt Functions -->
+		<script>
+			var encrypt = function(){
+				document.getElementById("io").value = CryptoJS.AES.encrypt(document.getElementById("io").value, document.getElementById("password").value);
+			};
+			var decrypt = function(){
+				document.getElementById("io").value = CryptoJS.AES.decrypt(document.getElementById("io").value, document.getElementById("password").value).toString(CryptoJS.enc.Utf8);
+			};
+		</script>
+    </head>
+    <body>
+    	<section class="container">
+			<br>
+			<form role="form">
+			  <div class="form-group">
+				<textarea id="io" class="form-control" placeholder="input/output" type="text" rows="8"></textarea>
+			  </div>
+			  <div class="form-group">
+				<input id="password" class="form-control" type="password" placeholder="password"/>
+			  </div>
+			  <div class="form-group">
+				<input type="button" class="btn btn-success" onclick="decrypt()" value="Decrypt"></input>
+				<input type="button" class="btn btn-danger" onclick="encrypt()" value="Encrypt"></input>
+			  </div>
+			</form>
+    	</section>
+    </body>
+</html>

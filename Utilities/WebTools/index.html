@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <link rel="shortcut icon" href="/webtools/favicon.ico" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Webtools by antontsv</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Webtools</h1>
+        <h2>🔧 🔨  Utilities and tools used in web development</h2>
+        <a href="https://github.com/antontsv/webtools" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+
+          <h3>
+              <a id="json-anchor" class="anchor" name="json" aria-hidden="true">
+                  <span aria-hidden="true" class="octicon octicon-link"></span>
+              </a>
+              JSON <span id="json-format" onClick="runJSONFormatter()">format</span>
+
+          </h3>
+          <style type="text/css">
+            #json-out {display:none; outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+             .string { color: green; }
+            .number { color: darkorange; }
+            .boolean { color: blue; }
+            .null { color: magenta; }
+            .key { color: red; }
+          </style>
+          <textarea id="json-formater-input" onPaste="runJSONFormatterOnPaste()" style="width:100%; height:60px;" placeholder="Paste JSON to format & pretty-print" onKeydown="CTRLCheck(event,'json')"></textarea>
+          <pre id="json-out"></pre>
+          <script type="text/javascript">
+            var jsonInputElement = document.getElementById("json-formater-input");
+            var jsonOutputElement = document.getElementById("json-out");
+            function outputJSON(inp) {
+                jsonOutputElement.innerHTML = inp;
+                jsonOutputElement.style.display = 'inherit';
+            }
+
+            function runJSONFormatterOnPaste() {
+                setTimeout(runJSONFormatter, 100);
+            }
+
+            var runJSONFormatter = function (){
+                var v = jsonInputElement.value;
+                try {
+                    var j = JSON.parse(v);
+                    outputJSON(syntaxHighlight(JSON.stringify(j, undefined, 4)));
+                    selectContent(jsonOutputElement);
+                } catch (e) {
+                    outputJSON("^ Malformed JSON ^ <br>" + e.message);
+                }
+            }
+
+            function selectContent(element) {
+                var range,selection ;
+                if (document.body.createTextRange) {
+                    range = document.body.createTextRange();
+                    range.moveToElementText(element);
+                    range.select();
+                } else if (window.getSelection) {
+                    selection = window.getSelection();
+                    range = document.createRange();
+                    range.selectNodeContents(element);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+
+            function syntaxHighlight(json) {
+                        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                          function (match) {
+                                var cls = 'number';
+                                if (/^"/.test(match)) {
+                                    if (/:$/.test(match)) {
+                                        cls = 'key';
+                                    } else {
+                                        cls = 'string';
+                                    }
+                                } else if (/true|false/.test(match)) {
+                                    cls = 'boolean';
+                                } else if (/null/.test(match)) {
+                                    cls = 'null';
+                                }
+                                return '<span class="' + cls + '">' + match + '</span>';
+                          });
+              }
+
+          </script>
+
+          <h3>
+              <a id="url-encoding" class="anchor" name="url" aria-hidden="true">
+                  <span aria-hidden="true" class="octicon octicon-link"></span>
+              </a>
+              URL <span id="url-encode" onClick="runURLEncoder()">encode</span>/<span id="url-decode" onClick="runURLDecoder()">decode</span>
+          </h3>
+
+          <textarea id="URI-encoder" onPaste="autoRunEncoderDecoder()" style="width:100%; height:60px;" placeholder="Paste text to URL encode or decode" onKeydown="CTRLCheck(event,'url')"></textarea>
+          <script type="text/javascript">
+            var encoderElement = document.getElementById('URI-encoder');
+            var CTRLCheck=function(event, elementType) {
+                encoding_funcs = {
+                    'url': runURLEncoder,
+                    'base64': base64Encode,
+                    'html': runHTMLEncoder
+                }
+                decoding_funcs = {
+                    'url': runURLDecoder,
+                    'base64': base64Decode,
+                    'html': runHTMLDecoder
+                }
+                if(event && typeof event != undefined){
+                    if(event.ctrlKey) {
+                        switch(event.keyCode){
+                            case 69: //CTRL+e
+                                elementType in encoding_funcs && encoding_funcs[elementType]();
+                                event.preventDefault();
+                                break;
+                            case 68: //CTRL+d
+                                elementType in decoding_funcs && decoding_funcs[elementType]();
+                                event.preventDefault();
+                                break;
+                            case 70: //CTRL+f
+                               if (elementType == 'json'){
+                                   event.preventDefault();
+                                   runJSONFormatter();
+                               }
+                        }
+                    }
+                }
+            }
+            function runURLEncoder(v) {
+                var input = v ? v : encoderElement.value;
+                encoderElement.value = encodeURIComponent(input).replace(/'/g,"%27").replace(/"/g,"%22");
+            }
+            function runURLDecoder(v) {
+                var input = (v ? v : encoderElement.value).replace(/\+/g,  " ");
+                encoderElement.value = decodeURIComponent(input);
+            }
+            function autoRunEncoderDecoder() {
+                setTimeout(
+                    function(){
+                        var v = encoderElement.value;
+                        if(v.indexOf("%")>=0) {
+                            runURLDecoder(v);
+                        } else {
+                            runURLEncoder(v);
+                        }
+                        encoderElement.select();
+                }, 100);
+            }
+          </script>
+
+
+          <h3>
+              <a id="base64-encoding" class="anchor" name="base64" aria-hidden="true">
+                  <span aria-hidden="true" class="octicon octicon-link"></span>
+              </a>
+              Base64 <span id="base64-encode" onClick="base64Encode()">encode</span>/<span id="base64-decode" onClick="base64Decode()">decode</span>
+          </h3>
+          <textarea id="base64-encoder" onPaste="autoRunBase64EncoderDecoder()" style="width:100%; height:60px;" placeholder="Paste text to base64 encode or decode" onKeydown="CTRLCheck(event,'base64')"></textarea>
+          <script type="text/javascript">
+            var base64EncoderElement = document.getElementById('base64-encoder');
+            function base64Encode(){
+                var encoded = btoa(base64EncoderElement.value);
+                base64EncoderElement.value = encoded;
+            }
+            function base64Decode(){
+                var decoded = atob(base64EncoderElement.value);
+                base64EncoderElement.value = decoded;
+            }
+            function autoRunBase64EncoderDecoder() {
+                setTimeout(
+                    function(){
+                        var v = base64EncoderElement.value;
+                        var pattern = new RegExp("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$")
+                        if (v.length > 0) {
+                            if (pattern.test(v)) {
+                                base64Decode();
+                            } else{
+                                base64Encode();
+                            }
+                            base64EncoderElement.select();
+                        }
+
+                }, 100);
+            }
+          </script>
+
+          <h3>
+              <a id="html-encoding" class="anchor" name="url" aria-hidden="true">
+                  <span aria-hidden="true" class="octicon octicon-link"></span>
+              </a>
+              HTML <span id="html-encode" onClick="runHTMLEncoder()">encode</span>/<span id="html-decode" onClick="runHTMLDecoder()">decode</span>
+          </h3>
+
+          <textarea id="HTML-encoder" onPaste="autoRunHTMLEncoderDecoder()" style="width:100%; height:60px;" placeholder="Paste markup text to HTML encode or decode" onKeydown="CTRLCheck(event,'html')"></textarea>
+          <script type="text/javascript">
+            var htmlEntities = {
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;',
+              '/': '&#x2F;',
+              '`': '&#x60;',
+              '=': '&#x3D;'
+            };
+            var reverseHtmlEntities = {};
+            var htmlEncodePattern = /[&<>"'`=\/]/g;
+            var htmlDecodePattern = /(&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F;|&#x60;|&#x3D;)/g;
+            for(var key in htmlEntities){
+                reverseHtmlEntities[htmlEntities[key]] = key;
+            }
+            var htmlEncoderElement = document.getElementById('HTML-encoder');
+            function runHTMLEncoder(v) {
+                var input = v ? v : htmlEncoderElement.value;
+                htmlEncoderElement.value = String(input).replace(htmlEncodePattern, function (s) {
+                    return htmlEntities[s];
+                });
+            }
+            function runHTMLDecoder(v) {
+                var input = v ? v : htmlEncoderElement.value;
+                htmlEncoderElement.value = String(input).replace(htmlDecodePattern, function (s) {
+                    return reverseHtmlEntities[s];
+                });
+            }
+            function autoRunHTMLEncoderDecoder() {
+                setTimeout(
+                    function(){
+                        var v = htmlEncoderElement.value;
+                        if(htmlDecodePattern.test(v)) {
+                            runHTMLDecoder(v);
+                        } else {
+                            runHTMLEncoder(v);
+                        }
+                        htmlEncoderElement.select();
+                }, 100);
+            }
+          </script>
+          <h3>
+              <a id="unicode-emoji" class="anchor" href="#emoji" aria-hidden="true">
+                  <span aria-hidden="true" class="octicon octicon-link"></span>
+              </a>
+              Unicode emoji
+          </h3>
+
+        <p>
+        😁
+        😂
+        😃
+        😄
+        😅
+        😆
+        😇
+        😈
+        😉
+        😊
+        😋
+        😌
+        😍
+        😎
+        😏
+        😐
+        😑
+        😒
+        😓
+        😔
+        😕
+        😖
+        😗
+        😘
+        😙
+        😚
+        😛
+        😜
+        😝
+        😞
+        😟
+        😠
+        😡
+        😢
+        😣
+        😤
+        😥
+        😦
+        😧
+        😨
+        😩
+        😪
+        😫
+        😬
+        😭
+        😮
+        😯
+        😰
+        😱
+        😲
+        😳
+        😴
+        😵
+        😶
+        😷
+        😸
+        😹
+        😺
+        😻
+        😼
+        😽
+        😾
+        😿
+
+
+        🙀
+        🙅
+        🙆
+        🙇
+        🙈
+        🙉
+        🙊
+        🙋
+        🙌
+        🙍
+        🙎
+        🙏
+     </p>
+
+     <p>
+        ✂
+        ✃
+        ✄
+        ✅
+        ✆
+        ✇
+        ✈
+        ✉
+        ✊
+        ✋
+        👆
+        👇
+        👈
+        👉
+        👊
+        👋
+        👌
+        👍
+        👎
+        👏
+        👐
+        ✌
+        ✍
+        ✎
+        ✏
+        ✐
+        ✑
+        ✒
+        ✓
+        ✔
+        ✕
+        ✖
+        ✗
+        ✘
+        ✙
+        ✚
+        ✛
+        ✜
+        ✝
+        ✞
+        ✟
+        ✠
+        ✡
+        ✢
+        ✣
+        ✤
+        ✥
+        ✦
+        ✧
+        ✨
+        ✩
+        ✪
+        ✫
+        ✬
+        ✭
+        ✮
+        ✯
+        ✰
+        ✱
+        ✲
+        ✳
+        ✴
+        ✵
+        ✶
+        ✷
+        ✸
+        ✹
+        ✺
+        ✻
+        ✼
+        ✽
+        ✾
+        ✿
+     </p>
+
+     <p>
+        ❀
+        ❁
+        ❂
+        ❃
+        ❄
+        ❅
+        ❆
+        ❇
+        ❈
+        ❉
+        ❊
+        ❋
+        ❌
+        ❍
+        ❎
+        ❏
+        ❐
+        ❑
+        ❒
+        ❓
+        ❔
+        ❕
+        ❖
+        ❗
+        ❘
+        ❙
+        ❚
+        ❛
+        ❜
+        ❝
+        ❞
+        ❟
+        ❠
+        ❡
+        ❢
+        ❣
+        ❤
+        ❥
+        ❦
+        ❧
+        ❨
+        ❩
+        ❪
+        ❫
+        ❬
+        ❭
+        ❮
+        ❯
+        ❰
+        ❱
+        ❲
+        ❳
+        ❴
+        ❵
+        ❶
+        ❷
+        ❸
+        ❹
+        ❺
+        ❻
+        ❼
+        ❽
+        ❾
+        ❿
+     </p>
+
+     <p>
+        ➀
+        ➁
+        ➂
+        ➃
+        ➄
+        ➅
+        ➆
+        ➇
+        ➈
+        ➉
+        ➊
+        ➋
+        ➌
+        ➍
+        ➎
+        ➏
+        ➐
+        ➑
+        ➒
+        ➓
+        ➔
+        ➕
+        ➖
+        ➗
+        ➘
+        ➙
+        ➚
+        ➛
+        ➜
+        ➝
+        ➞
+        ➟
+        ➠
+        ➡
+        ➢
+        ➣
+        ➤
+        ➥
+        ➦
+        ➧
+        ➨
+        ➩
+        ➪
+        ➫
+        ➬
+        ➭
+        ➮
+        ➯
+        ➰
+        ➱
+        ➲
+        ➳
+        ➴
+        ➵
+        ➶
+        ➷
+        ➸
+        ➹
+        ➺
+        ➻
+        ➼
+        ➽
+        ➾
+        ➿
+     </p>
+
+     <p>
+        🚀
+        🚁
+        🚂
+        🚃
+        🚄
+        🚅
+        🚆
+        🚇
+        🚈
+        🚉
+        🚊
+        🚋
+        🚌
+        🚍
+        🚎
+        🚏
+        🚐
+        🚑
+        🚒
+        🚓
+        🚔
+        🚕
+        🚖
+        🚗
+        🚘
+        🚙
+        🚚
+        🚛
+        🚜
+        🚝
+        🚞
+        🚟
+        🚠
+        🚡
+        🚢
+        🚣
+        🚤
+        🚥
+        🚦
+        🚧
+        🚨
+        🚩
+        🚪
+        🚫
+        🚬
+        🚭
+        🚮
+        🚯
+        🚰
+        🚱
+        🚲
+        🚳
+        🚴
+        🚵
+        🚶
+        🚷
+        🚸
+        🚹
+        🚺
+        🚻
+        🚼
+        🚽
+        🚾
+        🚿
+        🛀
+        🛁
+        🛂
+        🛃
+        🛄
+        🛅
+     </p>
+
+     <p>
+        Ⓚ
+        Ⓛ
+        Ⓜ
+        Ⓝ
+        ⓞ
+        Ⓟ
+        Ⓠ
+        Ⓡ
+        Ⓢ
+        Ⓣ
+        Ⓤ
+        Ⓥ
+        Ⓦ
+        Ⓧ
+        Ⓨ
+        Ⓩ
+        ⓐ
+        ⓑ
+        ⓒ
+        ⓓ
+        ⓔ
+        ⓕ
+        ⓖ
+        ⓗ
+        ⓘ
+        ⓙ
+        ⓚ
+        ⓛ
+        ⓜ
+        ⓝ
+        ⓞ
+        ⓟ
+        ⓠ
+        ⓡ
+        ⓢ
+        ⓣ
+        ⓤ
+        ⓥ
+        ⓦ
+        ⓧ
+        ⓨ
+        ⓩ
+        ⓪
+        ⓫
+        ⓬
+        ⓭
+        ⓮
+        ⓯
+        ⓰
+        ⓱
+        ⓲
+        ⓳
+        ⓴
+        ⓵
+        ⓶
+        ⓷
+        ⓸
+        ⓹
+        ⓺
+        ⓻
+        ⓼
+        ⓽
+        ⓾
+        ⓿
+     </p>
+
+     <p>
+        🅀
+        🅁
+        🅂
+        🅃
+        🅄
+        🅅
+        🅆
+        🅇
+        🅈
+        🅉
+        🅏
+        🅐
+        🅑
+        🅒
+        🅓
+        🅔
+        🅕
+        🅖
+        🅗
+        🅘
+        🅙
+        🅚
+        🅛
+        🅜
+        🅝
+        🅞
+        🅟
+        🅠
+        🅡
+        🅢
+        🅣
+        🅤
+        🅥
+        🅦
+        🅧
+        🅨
+        🅩
+        🅰
+        🅱
+        🅲
+        🅳
+        🅴
+        🅵
+        🅶
+        🅷
+        🅸
+        🅹
+        🅺
+        🅻
+        🅼
+        🅽
+        🅾
+        🅿
+        <!-- \xF0\x9F\x86\x80 -->
+        🆀
+        🆁
+        🆂
+        🆃
+        🆄
+        🆅
+        🆆
+        🆇
+        🆈
+        🆉
+        🆎
+        🆏
+        🆑
+        🆒
+        🆓
+        🆔
+        🆕
+        🆖
+        🆗
+        🆘
+        🆙
+        🆚
+     </p>
+
+     <p>
+        <!-- \xF0\x9F\x87\xA9\xF0\x9F\x87\xAA -->
+        🇩🇪
+        🇩🇯
+        🇩🇰
+        🇩🇲
+        🇩🇴
+        🇩🇿
+        <!-- \xF0\x9F\x87\xAC\xF0\x9F\x87\xA6 -->
+        🇬🇦
+        🇬🇧
+        🇬🇩
+        🇬🇪
+        🇬🇫
+        🇬🇭
+        🇬🇮
+        🇬🇲
+        🇬🇳
+        🇬🇵
+        🇬🇶
+        🇬🇷
+        🇬🇹
+        🇬🇺
+        🇬🇼
+        🇬🇾
+        <!-- \xF0\x9F\x87\xA8\xF0\x9F\x87\xA0  -->
+        🇨🇦
+        🇨🇩
+        🇨🇫
+        🇨🇬
+        🇨🇭
+        🇨🇮
+        🇨🇰
+        🇨🇱
+        🇨🇲
+        🇨🇳
+        🇨🇴
+        🇨🇷
+        🇨🇺
+        🇨🇻
+        🇨🇼
+        🇨🇾
+        🇨🇿
+        <!-- \xF0\x9F\x87\xAF\xF0\x9F\x87\xA0 -->
+        🇯🇲
+        🇯🇴
+        🇯🇵
+        <!-- \xF0\x9F\x87\xB0\xF0\x9F\x87\xB7 -->
+        🇰🇪
+        🇰🇬
+        🇰🇭
+        🇰🇮
+        🇰🇲
+        🇰🇳
+        🇰🇵
+        🇰🇷
+        🇰🇼
+        🇰🇾
+        🇰🇿
+        <!-- \xF0\x9F\x87\xAB\xF0\x9F\x87\xB7 -->
+        🇫🇮
+        🇫🇯
+        🇫🇴
+        🇫🇷
+        <!-- \xF0\x9F\x87\xAA\xF0\x9F\x87\xB8 -->
+        🇪🇨
+        🇪🇪
+        🇪🇬
+        🇪🇷
+        🇪🇸
+        🇪🇹
+        <!-- \xF0\x9F\x87\xAE\xF0\x9F\x87\xB9 -->
+        🇮🇩
+        🇮🇪
+        🇮🇱
+        🇮🇳
+        🇮🇶
+        🇮🇷
+        🇮🇸
+        🇮🇹
+        <!-- \xF0\x9F\x87\xBA\xF0\x9F\x87\xB8 -->
+        🇺🇦
+        🇺🇬
+        🇺🇸
+        🇺🇾
+        <!-- \xF0\x9F\x87\xB7\xF0\x9F\x87\xBA -->
+        🇷🇪
+        🇷🇴
+        🇷🇸
+        🇷🇺
+        🇷🇼
+     </p>
+
+     <p>
+        ¡
+        ¢
+        £
+        ¤
+        ¥
+        ¦
+        §
+        ©
+        «
+        ®
+        °
+        ±
+        ²
+        ³
+        µ
+        ¶
+        ·
+        ¹
+        º
+        »
+        ¼
+        ½
+        ¾
+        ‡
+        •
+        ‣
+        ․
+        ‥
+        …
+        ‧
+        ‰
+        ‱
+        ′
+        ″
+        ‴
+        ‵
+        ‶
+        ‷
+        ‸
+        ‹
+        ›
+        ※
+        ‼
+        ‽
+        ‾
+        ‿
+        ⁀
+        ⁁
+        ⁂
+        ⁃
+        ⁄
+        ⁅
+        ⁆
+        ⁇
+        ⁈
+        ⁉
+        ⁊
+        ⁋
+        ⁌
+        ⁍
+        ⁎
+        ⁏
+        ⁐
+        ⁑
+        ⁒
+        ⁓
+        ⁔
+        ⁕
+        ⁖
+        ⁗
+        ⁘
+        ⁙
+        ⁚
+        ⁛
+        ⁜
+        ⁝
+        ⁞
+     </p>
+
+     <p>
+        ☀
+        ☁
+        ☂
+        ☃
+        ☄
+        ★
+        ☆
+        ☇
+        ☈
+        ☉
+        ☊
+        ☋
+        ☌
+        ☍
+        ☎
+        ☏
+        ☐
+        ☑
+        ☒
+        ☓
+        ☔
+        ☕
+        ☖
+        ☗
+        ☘
+        ☙
+        ☚
+        ☛
+        ☜
+        ☝
+        ☞
+        ☟
+        ☠
+        ☡
+        ☢
+        ☣
+        ☤
+        ☥
+        ☦
+        ☧
+        ☨
+        ☩
+        ☪
+        ☫
+        ☬
+        ☭
+        ☮
+        ☯
+        ☰
+        ☱
+        ☲
+        ☳
+        ☴
+        ☵
+        ☶
+        ☷
+        ☸
+        ☹
+        ☺
+        ☻
+        ☼
+        ☽
+        ☾
+        ☿
+        ♀
+        ♁
+        ♂
+        ♃
+        ♄
+        ♅
+        ♆
+        ♇
+        ♈
+        ♉
+        ♊
+        ♋
+        ♌
+        ♍
+        ♎
+        ♏
+        ♐
+        ♑
+        ♒
+        ♓
+        ♔
+        ♕
+        ♖
+        ♗
+        ♘
+        ♙
+        ♚
+        ♛
+        ♜
+        ♝
+        ♞
+        ♟
+        ♠
+        ♡
+        ♢
+        ♣
+        ♤
+        ♥
+        ♦
+        ♧
+        ♨
+        ♩
+        ♪
+        ♫
+        ♬
+        ♭
+        ♮
+        ♯
+        ♰
+        ♱
+        ♲
+        ♳
+        ♴
+        ♵
+        ♶
+        ♷
+        ♸
+        ♹
+        ♺
+        ♻
+        ♼
+        ♽
+        ♾
+        ♿
+        ⚀
+        ⚁
+        ⚂
+        ⚃
+        ⚄
+        ⚅
+        ⚆
+        ⚇
+        ⚈
+        ⚉
+        ⚊
+        ⚋
+        ⚌
+        ⚍
+        ⚎
+        ⚏
+        ⚐
+        ⚑
+        ⚒
+        ⚓
+        ⚔
+        ⚕
+        ⚖
+        ⚗
+        ⚘
+        ⚙
+        ⚚
+        ⚛
+        ⚜
+        ⚠
+        ⚡
+        ⚢
+        ⚣
+        ⚤
+        ⚥
+        ⚦
+        ⚧
+        ⚨
+        ⚩
+        ⚪
+        ⚫
+        ⚬
+        ⚭
+        ⚮
+        ⚯
+        ⚰
+        ⚱
+        ⚲
+        ⚽
+        ⚾
+        ⛄
+        ⛅
+        ⛈
+        ⛎
+        ⛏
+        ⛑
+        ⛓
+        ⛔
+        ⛢
+        ⛩
+        ⛪
+        ⛰
+        ⛱
+        ⛲
+        ⛳
+        ⛴
+        ⛵
+        ⛷
+        ⛸
+        ⛹
+        ⛺
+        ⛽
+     </p>
+
+     <p>
+        Draw boxes/lines:
+        ─
+        ━
+        │
+        ┃
+        ┄
+        ┅
+        ┆
+        ┇
+        ┈
+        ┉
+        ┊
+        ┋
+        ┌
+        ┍
+        ┎
+        ┏
+        ┐
+        ┑
+        ┒
+        ┓
+        └
+        ┕
+        ┖
+        ┗
+        ┘
+        ┙
+        ┚
+        ┛
+        ├
+        ┝
+        ┞
+        ┟
+        ┠
+        ┡
+        ┢
+        ┣
+        ┤
+        ┥
+        ┦
+        ┧
+        ┨
+        ┩
+        ┪
+        ┫
+        ┬
+        ┭
+        ┮
+        ┯
+        ┰
+        ┱
+        ┲
+        ┳
+        ┴
+        ┵
+        ┶
+        ┷
+        ┸
+        ┹
+        ┺
+        ┻
+        ┼
+        ┽
+        ┾
+        ┿
+        ╀
+        ╁
+        ╂
+        ╃
+        ╄
+        ╅
+        ╆
+        ╇
+        ╈
+        ╉
+        ╊
+        ╋
+        ╌
+        ╍
+        ╎
+        ╏
+        ═
+        ║
+        ╒
+        ╓
+        ╔
+        ╕
+        ╖
+        ╗
+        ╘
+        ╙
+        ╚
+        ╛
+        ╜
+        ╝
+        ╞
+        ╟
+        ╠
+        ╡
+        ╢
+        ╣
+        ╤
+        ╥
+        ╦
+        ╧
+        ╨
+        ╩
+        ╪
+        ╫
+        ╬
+        ╭
+        ╮
+        ╯
+        ╰
+        ╱
+        ╲
+        ╳
+        ╴
+        ╵
+        ╶
+        ╷
+        ╸
+        ╹
+        ╺
+        ╻
+        ╼
+        ╽
+        ╾
+        ╿
+     </p>
+     <p>
+         🌏
+         🌍
+         🌎
+         🛫
+         🛬
+         🛩
+     </p>
+
+     <ul>
+         <li>
+             <a href="http://jsfiddle.net/KJQ9K/">JSON format on JSFiddle</a>
+         </li>
+         <li>
+             <a href="http://apps.timwhitlock.info/emoji/tables/unicode">Tim Whitlock's apps</a>
+         </li>
+         <li>
+             <a href="http://jrgraphix.net/r/Unicode/2300-23FF">Unicode Character Tables</a>
+         </li>
+         <li>
+             <a href="http://unicode.org/emoji/charts/full-emoji-list.html">Unicode.org emoji</a>
+         </li>
+         <li>
+             <span>💻  Mac edit/Emoji+Symbols menu: ^⌘ Space</span>
+         </li>
+     </ul>
+
+        </section>
+
+        <aside id="sidebar">
+
+          <p>
+          <h3>Tools:</h3>
+          <ul>
+             <li><a href="color.html">Colors</a></li>
+          </ul>
+          </p>
+          <p class="repo-owner"><a href="https://github.com/antontsv/webtools"></a> is maintained by <a href="https://github.com/antontsv">antontsv</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+
+  </body>
+</html>

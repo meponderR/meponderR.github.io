@@ -1,0 +1,8 @@
+Origin: meponder's Repo
+Label: meponder's Repo
+Suite: stable
+Version: 1.0
+Codename: stable
+Architectures: iphoneos-arm
+Components: main
+Description: meponder's Repo

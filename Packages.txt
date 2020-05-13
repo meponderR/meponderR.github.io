@@ -1,0 +1,13 @@
+Package: com.libretro.retroarch
+Version: 1.7.0
+Section: Games
+Maintainer: Libretro Team
+Architecture: iphoneos-arm
+Filename: ./Debs/RetroArch.deb
+Size: 190,953,110
+MD5sum: 8839af4c7108f2a4e97a692063b33e23
+Description: A multi-core emulator.
+Name: Retroarch
+Author: Libretro Team
+Homepage: http://www.retroarch.com/
+

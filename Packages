@@ -1,0 +1,69 @@
+Package: me.oatmealdome.dolphinios
+Name: Dolphin iOS ERepo 
+Version: 2.1.0.119
+Architecture: iphoneos-arm
+Description: Dolphin on iOS
+Maintainer: OatmealDome
+Author: OatmealDome
+Section: Games
+Filename: Debs/me.oatmealdome.dolphinios_2.0.0-238.deb
+Size: 67859444
+MD5sum: ec4a6d3de8dfeb8a91a0acdb84290f56
+SHA1: 43d05f5d7375ee100dbd6aad6a6cc14d487e40f3
+SHA256: 19279052dc7739854488e0f66e5bb9d8c2c34d4bdfa5f7b5b44964ac8845afb9
+
+Package: com.hackyouriphone.textyle
+Name: Textyle ERepo
+Version: 1.4.1k
+Architecture: iphoneos-arm
+Description: Quickly style any text
+Maintainer: deniz
+Author: deniz
+Section: Tweaks
+Filename: Debs/com.hackyouriphone.textyle_1.4.1k.deb
+Size: 210822
+MD5sum: e1fc6909710b5f5e5ecaf3a6e346b671
+SHA1: 050dd93d301015254599afe920adb787c58b40de
+SHA256: 9bee8cb7f1ea529b32f54a18dcd6d721c22cb51ae590e0517a773ddc9551439a
+
+Package: com.hackyouriphone.smartbattery
+Name: SmartBattery ERepo
+Version: 1.3.6k
+Architecture: iphoneos-arm
+Description: Save your battery, improve LPM.
+Maintainer: elias
+Author: elias
+Section: Tweaks
+Filename: Debs/com.hackyouriphone.smartbattery_1.3.6k.deb
+Size: 253386
+MD5sum: b64f84816f77b0655d6c9f140e02d60f
+SHA1: 7ad9d882e54e8d821b72cf403302142f855187b6
+SHA256: 5fc6798046a81b6f1eabba5a920882484044e62f35aac07926fb3b49b66acea7
+
+Package: com.hackyouriphone.st5
+Name: Springtomize 5 ERepo
+Version: 5.0.1
+Architecture: iphoneos-arm
+Description: Customize your device like never before.
+Maintainer: IDK
+Author: IDK
+Section: Tweaks
+Filename: Debs/com.hackyouriphone.st5_5.0.1.deb
+Size: 742556
+MD5sum: 0405bb123f03d1bbf62e6e03069245c6
+SHA1: 3ff525defefbe19b152edf2b9d61b2608763a499
+SHA256: 31b35d41303b19a3c7562210172d08dca0a0b71b3234a9aaae436b7b55dee900
+
+Package: com.hackyouriphone.floatingdockplus13
+Name: Floating Dock Plus 13 ERepo
+Version: 1.1.3
+Architecture: iphoneos-arm
+Description: Use your Dock like a PRO!
+Maintainer: IDK
+Author: IDK
+Section: Tweaks
+Filename: Debs/com.hackyouriphone.floatingdockplus13_1.1.3.deb
+Size: 108686
+MD5sum: ee0488d0378af355f31e5e3e4ebb0cf6
+SHA1: 407c181554dd523795128d5a75723abe67a6dd58
+SHA256: 7ef0ca17c8d1e998c83a7b21f7bf0700052337de252fc41e15a07f66ee2e78e8
